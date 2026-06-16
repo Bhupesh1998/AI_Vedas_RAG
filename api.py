@@ -1,18 +1,21 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+from rag import ask_rag
+
 app = FastAPI()
 
-class Question(BaseModel):
+
+class QuestionRequest(BaseModel):
     question: str
 
+
 @app.post("/chat")
-def chat(question_data: Question):
+def chat(request: QuestionRequest):
 
-    question = question_data.question
-
-    # ata temporary
-    answer = f"Question hota: {question}"
+    answer = ask_rag(
+        request.question
+    )
 
     return {
         "answer": answer

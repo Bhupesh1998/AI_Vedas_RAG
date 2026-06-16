@@ -1,95 +1,67 @@
 import chromadb
 from sentence_transformers import SentenceTransformer
-from ollama import chat
+from llm import generate_answer
 
-model = SentenceTransformer(
-    "BAAI/bge-m3"
-)
+# Load models once
+model = SentenceTransformer("BAAI/bge-m3")
+client = chromadb.PersistentClient(path="./chroma_db")
+collection = client.get_collection("garuda_purana")
 
-client = chromadb.PersistentClient(
-    path="./chroma_db"
-)
+DISTANCE_THRESHOLD = 1.2
 
-collection = client.get_collection(
-    "garuda_purana"
-)
+def ask_rag(question):
+    # Indented everything inside the function by 4 spaces
+    query_embedding = model.encode(question).tolist()
 
-question = input("Question: ")
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=5
+    )
 
-query_embedding = model.encode(
-    question
-).tolist()
+    best_distance = results["distances"][0][0]
 
-results = collection.query(
-    query_embeddings=[query_embedding],
-    n_results=5
-)
+    print("\nTOP DISTANCE:")
+    print(best_distance)
 
-best_distance = results["distances"][0][0]
+    if best_distance > DISTANCE_THRESHOLD:
+        return "या पुस्तकात याचे उत्तर सापडले नाही."
 
-print("\nTOP DISTANCE:")
-print(best_distance)
+    context = "\n\n".join(results["documents"][0][:5])
 
-if best_distance > 1.2:
-    print("\nया पुस्तकात याचे उत्तर सापडले नाही.")
-    exit()
+    print("\n===== CONTEXT =====\n")
+    print(context[:2000])
+    print("\n===================\n")
 
-context = "\n\n".join(
-    # results["documents"][0]
-    results["documents"][0][:3]
-)
+    prompt = f"""
+You are a retrieval-based book assistant.
 
+RULES:
 
-print("\n===== CONTEXT =====\n")
-print(context[:3000])
-print("\n===================\n")
+1. Use ONLY the provided CONTEXT.
+2. Never use your own knowledge.
+3. Never answer from training data.
+4. Never guess.
+5. Never infer.
+6. Never summarize information that is not explicitly present in the context.
+7. Every statement in the answer must be supported by the context.
+8. If the answer is not explicitly found in the context, reply exactly:
 
-prompt = f"""
-You are a book assistant.
-
-Rules:
-
-1. Answer ONLY from the provided context.
-2. Do NOT add your own knowledge.
-3. Do NOT infer or assume anything.
-4. Quote relevant lines from context when possible.
-5. If answer is not found, say:
-   "या पुस्तकात याचे उत्तर सापडले नाही."
+या पुस्तकात याचे उत्तर सापडले नाही.
 
 CONTEXT:
 {context}
 
 QUESTION:
 {question}
+
+ANSWER:
 """
 
-response = chat(
-    model="qwen3:8b",
-    messages=[
-        {
-            "role": "system",
-            "content": """
-You are a retrieval-based book assistant.
 
-Rules:
+    return generate_answer(prompt)
 
-1. Use ONLY the provided context.
-2. Never use your own knowledge.
-3. Never answer from training data.
-4. If the answer is not explicitly found in the context, reply exactly:
-
-या पुस्तकात याचे उत्तर सापडले नाही.
-
-5. Do not guess.
-6. Do not infer.
-"""
-        },
-        {
-            "role": "user",
-            "content": prompt
-        }
-    ]
-)
-
-print("\n")
-print(response["message"]["content"])
+if __name__ == "__main__":
+    question = input("Question: ")
+    answer = ask_rag(question)
+    print("\n===== ANSWER =====\n")
+    print(answer)
