@@ -1,122 +1,148 @@
-# Offline RAG Chatbot for Hindi / Sanskrit Books
+# Vyas AI 📚
 
-An offline Retrieval-Augmented Generation (RAG) system built using:
-
-- Python
-- BGE-M3 Embeddings
-- ChromaDB
-- Qwen3 8B (Ollama)
-- FastAPI
-- React (Frontend - WIP)
+An AI-powered Retrieval-Augmented Generation (RAG) application built using React, FastAPI, ChromaDB, BGE-M3 embeddings, Gemini, and Qwen.
 
 ## Features
 
-- PDF OCR Processing
-- Text Cleaning Pipeline
-- Text Chunking
-- Vector Embeddings using BGE-M3
-- ChromaDB Vector Search
-- Offline LLM Inference using Qwen3 8B
-- Hallucination Guard using Distance Threshold
-- Works completely offline after setup
-
-## Architecture
-
-User Question
-
-↓
-
-BGE-M3 Embedding
-
-↓
-
-ChromaDB Similarity Search
-
-↓
-
-Top Relevant Chunks
-
-↓
-
-Qwen3 8B
-
-↓
-
-Answer
+- Ask questions from books and documents
+- Retrieval-Augmented Generation (RAG)
+- ChromaDB Vector Database
+- BGE-M3 Embeddings
+- Gemini Integration (Development)
+- Qwen3:8B Integration (Production / Offline)
+- FastAPI Backend
+- React + Tailwind Frontend
+- Mobile Responsive UI
+- Environment-based LLM Switching
 
 ## Tech Stack
 
+### Frontend
+
+- React
+- Vite
+- Tailwind CSS
+
 ### Backend
 
-- Python
 - FastAPI
 - ChromaDB
-- Sentence Transformers
-- Ollama
+- Sentence Transformers (BGE-M3)
 
-### Embedding Model
+### LLMs
 
-- BAAI/bge-m3
+- Gemini 2.5 Flash (Development)
+- Qwen3:8B via Ollama (Production)
 
-### LLM
+## Architecture
 
-- Qwen3 8B
+User
+↓
+React Frontend
+↓
+FastAPI
+↓
+ChromaDB Retrieval
+↓
+Gemini / Qwen
+↓
+Answer
 
 ## Installation
 
-### Clone Repository
+### Backend
 
 ```bash
-git clone <your-repo-url>
-cd <repo-name>
-```
+git clone <repository-url>
+cd backend
 
-### Create Virtual Environment
-
-```bash
 python -m venv venv
+
 source venv/bin/activate
-```
 
-### Install Dependencies
-
-```bash
 pip install -r requirements.txt
 ```
 
-### Start Ollama
+### Run Backend
 
 ```bash
-ollama serve
+uvicorn api:app --reload
 ```
 
-### Download Model
-
-```bash
-ollama pull qwen3:8b
-```
-
-### Run Application
-
-```bash
-python rag.py
-```
-
-## Example Question
+Backend URL:
 
 ```text
-बीमारी कैसे ठीक की?
+http://127.0.0.1:8000
+```
+
+Swagger:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+---
+
+### Frontend
+
+```bash
+cd frontend
+
+npm install
+
+npm run dev
+```
+
+Frontend URL:
+
+```text
+http://localhost:5173
+```
+
+## Environment Variables
+
+```env
+APP_ENV=development
+
+GEMINI_API_KEY=YOUR_API_KEY
+```
+
+Production:
+
+```env
+APP_ENV=production
+```
+
+## API Example
+
+POST `/chat`
+
+Request:
+
+```json
+{
+  "question": "माँ कौन थीं?"
+}
+```
+
+Response:
+
+```json
+{
+  "answer": "..."
+}
 ```
 
 ## Future Improvements
 
-- FastAPI API Layer
-- React Chat Interface
-- Multi-PDF Support
+- Streaming Responses
+- Chat History
+- Markdown Rendering
+- User Authentication
+- Multi-book Support
 - Source Citations
-- Reranking
-- Agentic RAG
+- LangGraph Integration
 
 ## Author
 
-Bhupesh
+Bhupesh Mali
