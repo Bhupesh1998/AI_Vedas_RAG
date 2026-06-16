@@ -105,7 +105,7 @@ python rag.py
 ## Example Question
 
 ```text
-माँ कौन थीं?
+बीमारी कैसे ठीक की?
 ```
 
 ## Future Improvements
