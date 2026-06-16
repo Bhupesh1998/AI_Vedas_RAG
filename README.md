@@ -2,6 +2,9 @@
 
 An AI-powered Retrieval-Augmented Generation (RAG) application built using React, FastAPI, ChromaDB, BGE-M3 embeddings, Gemini, and Qwen.
 
+<img width="1460" height="795" alt="Screenshot 2026-06-17 at 12 03 59 AM" src="https://github.com/user-attachments/assets/1f50906d-3994-43bd-a782-7ca6fba930fd" />
+
+
 ## Features
 
 - Ask questions from books and documents
